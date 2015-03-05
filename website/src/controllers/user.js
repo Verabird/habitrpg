@@ -300,6 +300,16 @@ api['delete'] = function(req, res, next) {
   var plan = res.locals.user.purchased.plan;
   if (plan && plan.customerId && !plan.dateTerminated)
     return res.json(400,{err:"You have an active subscription, cancel your plan before deleting your account."});
+    // Need to call close challenge from the  challenges.js file here
+    // First, find all challenges where user is the leader
+    cid=_result(_.findWhere(Challenges, { 'leader': res.locals.user._id }), '_id');
+    while (cid) {
+      //Close challenge
+      $rootScope.$broadcast('LeaderDeleteEvent', {cid: cid, cb: next});
+      // check for any more
+      cid=_result(_.findWhere(Challenges, { 'leader': res.locals.user._id }), '_id');
+    }
+    error("don't actually delete")
   res.locals.user.remove(function(err){
     if (err) return next(err);
     res.send(200);

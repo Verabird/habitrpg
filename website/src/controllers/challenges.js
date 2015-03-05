@@ -311,6 +311,16 @@ api['delete'] = function(req, res, next){
 }
 
 /**
+ * Delete and Close because challenge creator account was deleted
+ */
+function leaderLeft($rootScope){
+  $rootScope.$on('LeaderDeleteEvent', function(cid, cb) {
+    console.log('DeleteEvent????????');
+    closeChal(cid, {broken: 'CHALLENGE_DELETED'}, cb);
+  });
+}
+
+/**
  * Select Winner & Close
  */
 api.selectWinner = function(req, res, next) {
